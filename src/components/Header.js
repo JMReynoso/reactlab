@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -44,6 +44,28 @@ const Header = () => {
     }
   };
 
+  //Keeping track of the previous scroll position in a variable
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const headerRef = useRef(null); 
+  //hide header on scroll
+  useEffect(() => {
+    const headerElement = headerRef.current; 
+    const handleScroll = () => { 
+      if (window.scrollY > lastScrollY) { 
+        headerElement.style.transform = "translateY(0)";
+      } else { 
+        headerElement.style.transform = "translateY(-200px)";
+      } 
+      setLastScrollY(window.scrollY);
+    }
+
+    //subscribe to listener changes
+    window.addEventListener('scroll', handleScroll)
+
+    //unsubscribe to listener
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [lastScrollY]);
+
   return (
     <Box
       position="fixed"
@@ -66,9 +88,9 @@ const Header = () => {
           <nav>
             <HStack spacing={4}>
             {
-              socials.map((social) => {
+              socials.map((social, index) => {
                 return (
-                  <a href={social.url}>
+                  <a href={social.url} key={index}>
                     <FontAwesomeIcon icon={social.icon} size="2x"/>
                   </a>
                 );
